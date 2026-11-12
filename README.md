@@ -25,6 +25,7 @@ Log in to the GrabFood merchant portal, read live and past orders, and manage me
 - [Authentication](#authentication)
 - [API Reference](#api-reference)
 - [Error Handling](#error-handling)
+- [Examples](#examples)
 - [Contributing](#contributing)
 - [Support Us](#support-us)
 - [License](#license)
@@ -39,7 +40,7 @@ Log in to the GrabFood merchant portal, read live and past orders, and manage me
 - 📦 Inventory export and bulk upload
 - ✅ Mark orders as seen / food ready
 - 🔁 Automatic retry on 5xx and network errors
-- 📦 Written in TypeScript, ships type definitions
+- 📦 Written in TypeScript, ships type definitions — works with both ESM (`import`) and CommonJS (`require`)
 
 ## Installation
 
@@ -47,7 +48,14 @@ Log in to the GrabFood merchant portal, read live and past orders, and manage me
 npm install grab-merchant-api
 ```
 
-Requires **Node.js 22+**. Logging in needs a local Chrome or Chromium; API calls with a saved session do not.
+Requires **Node.js 22+**. The package ships both ESM and CommonJS builds:
+
+```ts
+import { GrabClient } from 'grab-merchant-api'; // ESM
+const { GrabClient } = require('grab-merchant-api'); // CommonJS
+```
+
+Logging in needs a local Chrome or Chromium (found automatically); API calls with a saved session do not.
 
 ## Quick Start
 
@@ -56,7 +64,7 @@ import { GrabClient, PageType, loginGrab } from 'grab-merchant-api';
 
 const session = await loginGrab(
   { username: 'my-store', password: '••••••' },
-  { chromePath: '/usr/bin/chromium-browser', onOtp: async (hint) => askUser(hint) },
+  { onOtp: async (hint) => askUser(hint) },
 );
 
 const grab = new GrabClient(session);
@@ -74,7 +82,7 @@ const orders = await grab.getOrders(active.map((o) => o.orderID));
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `chromePath` | `string` | — | Path to Chrome / Chromium |
+| `chromePath` | `string` | auto-detect | Path to Chrome / Chromium — defaults to `CHROME_PATH`, then standard install locations |
 | `onOtp` | `(hint) => Promise<string>` | — | Return the OTP when Grab asks for one |
 | `onChallenge` | `(remote) => void` | — | Grab shows an anti-bot challenge — hand `remote` to a person to solve |
 | `challengeMs` | `number` | `300000` | Time allowed for solving the challenge |
@@ -160,12 +168,24 @@ try {
 }
 ```
 
+## Examples
+
+| File | What it shows |
+|---|---|
+| [`login-and-save-session.ts`](examples/login-and-save-session.ts) | Log in and save the session to a JSON file |
+| [`poll-new-orders.ts`](examples/poll-new-orders.ts) | Poll the Orders screen every 30 s and print new orders |
+| [`toggle-item.ts`](examples/toggle-item.ts) | Mark a menu item available / unavailable |
+
+Run them with `npx tsx examples/<file> …`. Session files hold live cookies — never commit them.
+
 ## Contributing
 
-Issues and pull requests are welcome. Protocol notes for maintainers are in [docs/PROTOCOL.md](docs/PROTOCOL.md).
+Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Protocol notes for maintainers are in
+[docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 ```bash
 npm install
+npm test                       # unit tests, no network
 npm run build
 node scripts/login-smoke.mjs   # interactive login test, prints cookie names only
 ```

@@ -2,7 +2,7 @@
  * grab-merchant-api — unofficial Grab Merchant API (emulates the merchant.grab.com portal).
  *
  * ```ts
- * const session = await loginGrab({ username, password }, { chromePath, onOtp });  // PERSIST the session
+ * const session = await loginGrab({ username, password }, { onOtp });  // PERSIST the session
  * const grab = new GrabClient(session);
  * const active = await grab.listActiveOrders(PageType.PREPARING);
  * const bundles = await grab.getOrders(active.map((o) => o.orderID));
@@ -15,6 +15,8 @@ export { GrabClient, cookieValue, tokenExpiresAt } from './client';
 export { PageType } from './constants';
 export { GrabError } from './errors';
 export type { GrabErrorCode } from './errors';
-export { loginGrab } from './login';
-export type { GrabLoginEvent, GrabLoginOptions, GrabRemote, GrabRemoteKey, GrabRemoteScreen } from './login';
+export { loginGrab } from './auth/login';
+export { findChromePath } from './auth/chrome';
+export type { FindChromeEnv } from './auth/chrome';
+export type { GrabLoginEvent, GrabLoginOptions, GrabRemote, GrabRemoteKey, GrabRemoteScreen } from './auth/types';
 export type * from './types';

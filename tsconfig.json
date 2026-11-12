@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM"],
+    "types": ["node"],
     "strict": true,
-    "declaration": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "rootDir": "./src",
-    "outDir": "./dist"
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "grab-merchant-api": ["./src/index.ts"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "tests", "examples", "tsup.config.ts", "vitest.config.mts"]
 }

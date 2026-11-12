@@ -31,9 +31,10 @@ export async function openBrowser(chromePath: string, userAgent: string, profile
     dir = profileDir;
     await mkdir(dir, { recursive: true });
     // A Chrome killed mid-run (SIGKILL / pod restart) leaves lock files → next launch reports "profile in use".
-    for (const f of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) await rm(join(dir, f), { force: true }).catch(() => undefined);
+    for (const f of ['SingletonLock', 'SingletonSocket', 'SingletonCookie'])
+      await rm(join(dir, f), { force: true }).catch(() => undefined);
   } else {
-    dir = await mkdtemp(join(tmpdir(), 'gca-chrome-'));
+    dir = await mkdtemp(join(tmpdir(), 'grab-merchant-api-chrome-'));
   }
   const proc = spawn(
     chromePath,
@@ -115,6 +116,8 @@ async function openTab(browserWs: string): Promise<Cdp> {
     ws.once('error', reject);
   });
   let id = 0;
+  // The message handler below reads this before it is assigned — `const` would throw (temporal dead zone).
+  // eslint-disable-next-line prefer-const
   let sessionId: string | undefined;
   const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>();
   const handlers: ((m: string, p: Record<string, unknown>) => void)[] = [];
@@ -143,7 +146,8 @@ async function openTab(browserWs: string): Promise<Cdp> {
       ws.send(JSON.stringify({ id: i, method, params, ...(sid ? { sessionId: sid } : {}) }));
     });
   const target = await raw<{ targetId: string }>('Target.createTarget', { url: 'about:blank' });
-  sessionId = (await raw<{ sessionId: string }>('Target.attachToTarget', { targetId: target.targetId, flatten: true })).sessionId;
+  sessionId = (await raw<{ sessionId: string }>('Target.attachToTarget', { targetId: target.targetId, flatten: true }))
+    .sessionId;
   const send = <T>(method: string, params?: object) => raw<T>(method, params, sessionId);
   return {
     send,
