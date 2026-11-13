@@ -134,6 +134,20 @@ The access token lasts **2 days** and cannot be refreshed — call `loginGrab` a
 | `exportInventoryCsv()` | `string` | Current inventory as CSV |
 | `uploadInventoryCsv(csv, fileName)` | `string` | Bulk-upload inventory, returns the task id |
 
+Standalone helpers for the exported CSV:
+
+| Function | Returns | Description |
+|---|---|---|
+| `readInventoryCsv(csv)` | `Map<itemID, { stock, max }>` | Stock per item; empty cells are `null` |
+| `patchInventoryCsv(csv, rows)` | `{ csv, changed }` | Write new `CURRENTSTOCK` / `MAXSTOCK`; skip the upload when `changed` is `0` |
+
+```ts
+import { patchInventoryCsv } from 'grab-merchant-api';
+
+const { csv, changed } = patchInventoryCsv(await grab.exportInventoryCsv(), [{ itemID: 'A1', qty: 3 }]);
+if (changed > 0) await grab.uploadInventoryCsv(csv, 'stock.csv');
+```
+
 ### Session
 
 | Method | Description |
@@ -152,6 +166,7 @@ All library errors are instances of `GrabError` with a `code` (and HTTP `status`
 | `SESSION_EXPIRED` | Token expired (401) — log in again |
 | `FORBIDDEN` | Session valid but the action is blocked (403) |
 | `HTTP_ERROR` · `NETWORK` · `BAD_RESPONSE` | Request failed |
+| `CSV_SHAPE` | Inventory CSV layout not recognised (Grab changed the export format) |
 | `LOGIN_FAILED` | Wrong credentials, challenge not solved, Chrome failed to start… |
 | `OTP_REQUIRED` | Grab asked for an OTP and `onOtp` was not provided |
 | `LOGIN_ABORTED` | Login cancelled through `signal` |

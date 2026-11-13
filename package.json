@@ -1,6 +1,6 @@
 {
   "name": "grab-merchant-api",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Unofficial Grab Merchant API for Node.js — log in to the GrabFood merchant portal, read live and past orders, manage menu availability and inventory using session cookies.",
   "license": "MIT",
   "author": "rice2411",

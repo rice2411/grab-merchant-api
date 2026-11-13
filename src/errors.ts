@@ -21,6 +21,8 @@ export type GrabErrorCode =
   /** Network error / timeout. */
   | 'NETWORK'
   | 'BAD_RESPONSE'
+  /** Inventory CSV layout not recognised (no `ITEMID` / `CURRENTSTOCK` column) — Grab changed the export format. */
+  | 'CSV_SHAPE'
   /** Login failed (wrong password, Chrome failed to launch, cookie not found…). */
   | 'LOGIN_FAILED'
   /** Grab asked for an OTP but the caller did not provide one (`onOtp` missing / returned empty). */

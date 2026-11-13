@@ -15,6 +15,8 @@ export { GrabClient, cookieValue, tokenExpiresAt } from './client';
 export { PageType } from './constants';
 export { GrabError } from './errors';
 export type { GrabErrorCode } from './errors';
+export { patchInventoryCsv, readInventoryCsv } from './inventory-csv';
+export type { InventoryStock, InventoryStockPatch } from './inventory-csv';
 export { loginGrab } from './auth/login';
 export { findChromePath } from './auth/chrome';
 export type { FindChromeEnv } from './auth/chrome';
