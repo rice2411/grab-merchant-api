@@ -122,13 +122,17 @@ The access token lasts **2 days** and cannot be refreshed — call `loginGrab` a
 | `getOrders(ids)` | `GrabOrderBundle[]` | Details for many orders; one failure doesn't fail the batch |
 | `markOrders(ids, status, preparationTaskIDs?)` | `void` | `1` food ready · `2` seen |
 
+`parseOrder(detail)` turns a raw order detail (`getOrder(id)`, `getOrders(ids)[].detail`) into a typed `GrabOrder` —
+amounts as numbers in VND, `fare.net` = total − commission − VAT − PIT, item unit prices and modifiers — or `null`
+when it carries no order id. `parseMoney("292.000")` → `292000`.
+
 `PageType`: `PREPARING` · `PREPARING_V2` · `READY` · `UPCOMING` · `DELIVERING` · `COMPLETED`.
 
 ### Menu & inventory
 
 | Method | Returns | Description |
 |---|---|---|
-| `getMenu()` | `object` | Categories, items and modifier groups |
+| `getMenu()` | `object` | Categories, items and modifier groups — `parseMenu(menu)` gives a typed `GrabMenuData` |
 | `setItemsAvailable(ids, status)` | `void` | `1` available · `2` out until restock · `3` unavailable |
 | `setModifiersAvailable(ids, status)` | `void` | `1` available · `2` unavailable |
 | `exportInventoryCsv()` | `string` | Current inventory as CSV |
@@ -147,6 +151,29 @@ import { patchInventoryCsv } from 'grab-merchant-api';
 const { csv, changed } = patchInventoryCsv(await grab.exportInventoryCsv(), [{ itemID: 'A1', qty: 3 }]);
 if (changed > 0) await grab.uploadInventoryCsv(csv, 'stock.csv');
 ```
+
+### Bulk menu import file
+
+The portal imports a whole menu from a zip: a CSV plus an `images/` folder. `buildMenuCsv(rows)` writes the CSV in
+the portal's template (Vietnamese by default, `{ template }` to use another) — texts cut to Grab's limits, option
+groups serialised as `Name##Min-Max##Option:Price#…`, extra `OptionGroupN` columns added when needed.
+
+```ts
+import { buildMenuCsv, photoFileName } from 'grab-merchant-api';
+
+const csv = buildMenuCsv([
+  {
+    categoryName: 'Cakes',
+    itemName: 'Brownie',
+    price: 45000,
+    availableStatus: 'AVAILABLE',
+    photos: [photoFileName('https://cdn.example.com/brownie.jpg')], // put brownie.jpg in images/
+    optionGroups: [{ name: 'Size', minSelection: 1, maxSelection: 1, options: [{ name: 'L', price: 10000 }] }],
+  },
+]);
+```
+
+`MENU_CSV_LIMITS` holds the template's limits (60 / 80 / 300 characters, 4 photos of at most 2 MB).
 
 ### Session
 

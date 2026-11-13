@@ -17,6 +17,27 @@ export { GrabError } from './errors';
 export type { GrabErrorCode } from './errors';
 export { patchInventoryCsv, readInventoryCsv } from './inventory-csv';
 export type { InventoryStock, InventoryStockPatch } from './inventory-csv';
+export { MENU_CSV_LIMITS, buildMenuCsv, photoFileName, serializeOptionGroup } from './menu-csv';
+export type {
+  BuildMenuCsvOptions,
+  MenuAvailableStatus,
+  MenuCsvOption,
+  MenuCsvOptionGroup,
+  MenuCsvRow,
+} from './menu-csv';
+export { MENU_CSV_TEMPLATE_VI } from './menu-csv-template';
+export { parseMenu, parseMoney, parseOrder } from './parse';
+export type {
+  GrabMenuCategory,
+  GrabMenuData,
+  GrabMenuItem,
+  GrabMenuModifier,
+  GrabMenuModifierGroup,
+  GrabOrder,
+  GrabOrderFare,
+  GrabOrderItem,
+  GrabOrderModifier,
+} from './parse';
 export { loginGrab } from './auth/login';
 export { findChromePath } from './auth/chrome';
 export type { FindChromeEnv } from './auth/chrome';
